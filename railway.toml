@@ -3,12 +3,20 @@ builder = "nixpacks"
 buildCommand = "python manage.py collectstatic --noinput"
 
 [deploy]
-startCommand = "python manage.py migrate --noinput && gunicorn inventory_management.wsgi"
-healthcheckPath = "/"
-healthcheckTimeout = 100
+startCommand = "python manage.py migrate --noinput && gunicorn inventory_management.wsgi --timeout 60"
+healthcheckPath = "/admin/login/"
+healthcheckTimeout = 200
 restartPolicyType = "on_failure"
+
+[[deploy.healthcheck]]
+path = "/admin/login/"
+interval = "15s"
+timeout = "10s"
+retries = 3
+grace_period = "20s"
 
 [deploy.envs]
 PYTHON_VERSION = "3.12"
 DJANGO_SETTINGS_MODULE = "inventory_management.settings"
-DEBUG = "False" 
+DEBUG = "False"
+ALLOWED_HOSTS = "*.up.railway.app" 

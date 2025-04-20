@@ -27,26 +27,28 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-w07&5gwrdk==i^43uy8sz
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
+# ALLOWED_HOSTS configuration
 ALLOWED_HOSTS = [
-    'web-production-62941.up.railway.app',  # Current Railway domain
-    'inVentory.com',  # Your new custom domain
+    'web-production-62941.up.railway.app',
+    'inventory.com',
     'localhost',
     '127.0.0.1',
+    '*',  # Temporarily allow all hosts
 ]
 
 # CSRF Settings
 CSRF_TRUSTED_ORIGINS = [
     'https://web-production-62941.up.railway.app',
-    'https://inVentory.com',
+    'https://inventory.com',
     'http://localhost',
     'http://127.0.0.1',
 ]
 
 # Security Settings
-SECURE_SSL_REDIRECT = False  # Temporarily disable
-SECURE_PROXY_SSL_HEADER = None  # Temporarily disable
-SESSION_COOKIE_SECURE = False  # Temporarily disable
-CSRF_COOKIE_SECURE = False  # Temporarily disable
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
 
 
 # Application definition
@@ -104,7 +106,6 @@ WSGI_APPLICATION = 'inventory_management.wsgi.application'
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
 if DATABASE_URL:
-    # Parse database URL
     DATABASES = {
         'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
     }
@@ -117,10 +118,11 @@ else:
         }
     }
 
-# Print database info for debugging (will show up in Railway logs)
+# Print database info for debugging
 db_config = DATABASES['default']
 print(f"Current Database Engine: {db_config['ENGINE']}")
 print(f"Debug Mode: {DEBUG}")
+print(f"Allowed Hosts: {ALLOWED_HOSTS}")
 
 # Ensure we're using PostgreSQL in production
 if not DEBUG and not DATABASE_URL:
