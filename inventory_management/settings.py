@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'web-production-62941.up.railway.app',  # Current Railway domain
-    'inventory.yourdomain.com',  # Your new custom domain
+    'inVentory.com',  # Your new custom domain
     'localhost',
     '127.0.0.1',
 ]
