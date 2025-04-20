@@ -25,7 +25,12 @@ SECRET_KEY = 'django-insecure-w07&5gwrdk==i^43uy8szu2ftmy_-izw!_-((jd!p-e5l)whj6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']  # For development, replace with specific hosts in production
+ALLOWED_HOSTS = [
+    'web-production-62941.up.railway.app',  # Current Railway domain
+    'inventory.yourdomain.com',  # Your new custom domain
+    'localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
