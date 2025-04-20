@@ -19,4 +19,7 @@ grace_period = "20s"
 PYTHON_VERSION = "3.12"
 DJANGO_SETTINGS_MODULE = "inventory_management.settings"
 DEBUG = "False"
-ALLOWED_HOSTS = "*.up.railway.app" 
+ALLOWED_HOSTS = "*.up.railway.app,localhost,127.0.0.1"
+
+[deploy.variables]
+DATABASE_URL = "${DATABASE_URL}" 

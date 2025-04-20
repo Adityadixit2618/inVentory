@@ -103,14 +103,23 @@ WSGI_APPLICATION = 'inventory_management.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 # Database Configuration
+print("Checking environment variables...")
+print(f"DATABASE_URL present: {'DATABASE_URL' in os.environ}")
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
 if DATABASE_URL:
+    print(f"Found DATABASE_URL: {DATABASE_URL[:10]}...")  # Only print the beginning for security
     DATABASES = {
-        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+        'default': dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+            ssl_require=True
+        )
     }
 else:
     print("WARNING: DATABASE_URL not found. Using SQLite for development.")
+    print("Available environment variables:", list(os.environ.keys()))
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',

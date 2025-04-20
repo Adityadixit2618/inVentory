@@ -8,6 +8,10 @@ urlpatterns = [
     path('dashboard/', views.Dashboard.as_view(), name='dashboard'),
     path('signup/', views.SignUpView.as_view(), name='signup'),
     
+    # Authentication
+    path('login/', auth_views.LoginView.as_view(template_name='inventory/login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
+    
     # Inventory Management
     path('inventory/', views.InventoryItemListView.as_view(), name='inventory_list'),
     path('inventory/add/', views.AddItem.as_view(), name='add_item'),
@@ -27,6 +31,4 @@ urlpatterns = [
     
     # Reports
     path('reports/', views.ReportsView.as_view(), name='reports'),
-    path('login/', auth_views.LoginView.as_view(template_name='inventory/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]
