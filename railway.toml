@@ -1,0 +1,13 @@
+[build]
+builder = "nixpacks"
+buildCommand = "python manage.py migrate --noinput && python manage.py collectstatic --noinput"
+
+[deploy]
+startCommand = "gunicorn inventory_management.wsgi"
+healthcheckPath = "/"
+healthcheckTimeout = 100
+restartPolicyType = "on_failure"
+
+[deploy.envs]
+PYTHON_VERSION = "3.12"
+DJANGO_SETTINGS_MODULE = "inventory_management.settings" 

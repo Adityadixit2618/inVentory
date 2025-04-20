@@ -104,14 +104,12 @@ WSGI_APPLICATION = 'inventory_management.wsgi.application'
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
 if DATABASE_URL:
+    # Parse database URL
     DATABASES = {
-        'default': dj_database_url.config(
-            default=DATABASE_URL,
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
+        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
     }
 else:
+    print("WARNING: DATABASE_URL not found. Using SQLite for development.")
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -119,9 +117,18 @@ else:
         }
     }
 
-# Remove any fallback to SQLite in production
-if not DEBUG and 'sqlite' in DATABASES['default']['ENGINE']:
-    raise Exception('SQLite is not supported in production. Please configure PostgreSQL using DATABASE_URL.')
+# Ensure we're using PostgreSQL in production
+if not DEBUG and not DATABASE_URL:
+    raise Exception(
+        'DATABASE_URL environment variable is required when DEBUG=False'
+    )
+
+# Print database info for debugging (will show up in Railway logs)
+if not DEBUG:
+    db_config = DATABASES['default']
+    print(f"Database Engine: {db_config['ENGINE']}")
+    if 'sqlite' in db_config['ENGINE'].lower():
+        print("WARNING: Using SQLite in production is not recommended!")
 
 
 # Password validation
