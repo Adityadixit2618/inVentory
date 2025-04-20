@@ -43,10 +43,10 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # Security Settings
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = False  # Temporarily disable
+SECURE_PROXY_SSL_HEADER = None  # Temporarily disable
+SESSION_COOKIE_SECURE = False  # Temporarily disable
+CSRF_COOKIE_SECURE = False  # Temporarily disable
 
 
 # Application definition
@@ -157,17 +157,17 @@ LOGIN_URL = 'login'
 
 LOW_QUANTITY = 3
 
-# Security Settings
-if not DEBUG:
-    # HTTPS settings
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_BROWSER_XSS_FILTER = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# Comment out the production security settings for now
+# if not DEBUG:
+#     # HTTPS settings
+#     SECURE_SSL_REDIRECT = True
+#     SESSION_COOKIE_SECURE = True
+#     CSRF_COOKIE_SECURE = True
+#     SECURE_BROWSER_XSS_FILTER = True
+#     SECURE_CONTENT_TYPE_NOSNIFF = True
+#     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     
-    # HSTS settings
-    SECURE_HSTS_SECONDS = 31536000  # 1 year
-    SECURE_HSTS_PRELOAD = True
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+#     # HSTS settings
+#     SECURE_HSTS_SECONDS = 31536000  # 1 year
+#     SECURE_HSTS_PRELOAD = True
+#     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
