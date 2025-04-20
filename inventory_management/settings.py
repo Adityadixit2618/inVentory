@@ -100,25 +100,28 @@ WSGI_APPLICATION = 'inventory_management.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('PGDATABASE'),
-        'USER': os.environ.get('PGUSER'),
-        'PASSWORD': os.environ.get('PGPASSWORD'),
-        'HOST': os.environ.get('PGHOST'),
-        'PORT': os.environ.get('PGPORT'),
-    }
-}
+# Database Configuration
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
-# Fallback to SQLite if PostgreSQL is not configured
-if not all([os.environ.get('PGDATABASE'), os.environ.get('PGUSER'), os.environ.get('PGPASSWORD'), os.environ.get('PGHOST')]):
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
+# Remove any fallback to SQLite in production
+if not DEBUG and 'sqlite' in DATABASES['default']['ENGINE']:
+    raise Exception('SQLite is not supported in production. Please configure PostgreSQL using DATABASE_URL.')
 
 
 # Password validation
