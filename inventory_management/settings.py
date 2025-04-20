@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-w07&5gwrdk==i^43uy8szu2ftmy_-izw!_-((jd!p-e5l)whj6')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = [
     'web-production-62941.up.railway.app',  # Current Railway domain
@@ -116,6 +116,11 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
+# Print database info for debugging (will show up in Railway logs)
+db_config = DATABASES['default']
+print(f"Current Database Engine: {db_config['ENGINE']}")
+print(f"Debug Mode: {DEBUG}")
 
 # Ensure we're using PostgreSQL in production
 if not DEBUG and not DATABASE_URL:
