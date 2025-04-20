@@ -1,1 +1,1 @@
-web: python manage.py collectstatic --noinput && gunicorn inventory_management.wsgi 
+web: mkdir -p staticfiles && python manage.py collectstatic --noinput && gunicorn inventory_management.wsgi 
