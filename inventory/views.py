@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, View, CreateView, UpdateView, DeleteView, ListView
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.db.models import Sum, F, Q
@@ -212,3 +212,12 @@ class ReportsView(LoginRequiredMixin, View):
 			'room_stats': room_stats,
 		}
 		return render(request, 'inventory/reports.html', context)
+
+def logout_view(request):
+	"""Custom logout view that handles both GET and POST requests."""
+	if request.method == 'POST':
+		logout(request)
+		messages.success(request, 'You have been successfully logged out.')
+		return redirect('login')
+	elif request.method == 'GET':
+		return render(request, 'inventory/logout.html')

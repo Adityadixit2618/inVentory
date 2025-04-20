@@ -10,10 +10,7 @@ urlpatterns = [
     
     # Authentication
     path('login/', auth_views.LoginView.as_view(template_name='inventory/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(
-        template_name='inventory/logout.html',
-        next_page='login'
-    ), name='logout'),
+    path('logout/', views.logout_view, name='logout'),
     
     # Inventory Management
     path('inventory/', views.InventoryItemListView.as_view(), name='inventory_list'),
