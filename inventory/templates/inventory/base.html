@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{% block title %}Hotel Inventory Management{% endblock %}</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+	<style>
+		.sidebar {
+			min-height: 100vh;
+			background-color: #343a40;
+			color: white;
+		}
+		.sidebar .nav-link {
+			color: rgba(255,255,255,.75);
+		}
+		.sidebar .nav-link:hover {
+			color: white;
+		}
+		.sidebar .nav-link.active {
+			color: white;
+			background-color: rgba(255,255,255,.1);
+		}
+		.main-content {
+			padding: 20px;
+		}
+		.card {
+			margin-bottom: 20px;
+			box-shadow: 0 2px 4px rgba(0,0,0,.1);
+		}
+		.alert {
+			margin-bottom: 20px;
+		}
+	</style>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row">
+			<!-- Sidebar -->
+			<div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+				<div class="position-sticky pt-3">
+					<h4 class="text-white text-center mb-4">Hotel Inventory</h4>
+					<ul class="nav flex-column">
+						<li class="nav-item">
+							<a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+								<i class="bi bi-speedometer2"></i> Dashboard
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {% if request.resolver_match.url_name == 'inventory_list' %}active{% endif %}" href="{% url 'inventory_list' %}">
+								<i class="bi bi-box"></i> Inventory
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {% if request.resolver_match.url_name == 'room_list' %}active{% endif %}" href="{% url 'room_list' %}">
+								<i class="bi bi-door-closed"></i> Rooms
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {% if request.resolver_match.url_name == 'task_list' %}active{% endif %}" href="{% url 'task_list' %}">
+								<i class="bi bi-brush"></i> Housekeeping
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {% if request.resolver_match.url_name == 'reports' %}active{% endif %}" href="{% url 'reports' %}">
+								<i class="bi bi-graph-up"></i> Reports
+							</a>
+						</li>
+					</ul>
+					<hr class="text-white">
+					<ul class="nav flex-column">
+						<li class="nav-item">
+							<a class="nav-link" href="{% url 'logout' %}">
+								<i class="bi bi-box-arrow-right"></i> Logout
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<!-- Main content -->
+			<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+				{% if messages %}
+					{% for message in messages %}
+						<div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+							{{ message }}
+							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+						</div>
+					{% endfor %}
+				{% endif %}
+
+				{% block content %}
+				{% endblock %}
+			</main>
+		</div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+		// Initialize tooltips
+		var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+		var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+			return new bootstrap.Tooltip(tooltipTriggerEl)
+		})
+	</script>
+</body>
+</html>

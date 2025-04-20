@@ -1,0 +1,201 @@
+{% extends 'inventory/base.html' %}
+{% load inventory_tags %}
+
+{% block title %}Dashboard - Hotel Inventory Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+		<h1 class="h2">Dashboard</h1>
+		<div class="btn-toolbar mb-2 mb-md-0">
+			<a href="{% url 'add_item' %}" class="btn btn-sm btn-outline-primary me-2">
+				<i class="bi bi-plus-circle"></i> Add Item
+			</a>
+			<a href="{% url 'add_room' %}" class="btn btn-sm btn-outline-primary me-2">
+				<i class="bi bi-plus-circle"></i> Add Room
+			</a>
+			<a href="{% url 'add_task' %}" class="btn btn-sm btn-outline-primary">
+				<i class="bi bi-plus-circle"></i> Add Task
+			</a>
+		</div>
+	</div>
+
+	<!-- Room Status Cards -->
+	<div class="row mb-4">
+		<div class="col-md-3">
+			<div class="card text-white bg-success">
+				<div class="card-body">
+					<h5 class="card-title">Available Rooms</h5>
+					<h2 class="card-text">{{ available_rooms }}</h2>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="card text-white bg-danger">
+				<div class="card-body">
+					<h5 class="card-title">Occupied Rooms</h5>
+					<h2 class="card-text">{{ occupied_rooms }}</h2>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="card text-white bg-warning">
+				<div class="card-body">
+					<h5 class="card-title">Maintenance</h5>
+					<h2 class="card-text">{{ rooms|filter_status:'maintenance'|length }}</h2>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div class="card text-white bg-info">
+				<div class="card-body">
+					<h5 class="card-title">Cleaning</h5>
+					<h2 class="card-text">{{ rooms|filter_status:'cleaning'|length }}</h2>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Inventory Alerts -->
+	<div class="row mb-4">
+		<div class="col-md-6">
+			<div class="card">
+				<div class="card-header">
+					<h5 class="card-title mb-0">Low Stock Items</h5>
+				</div>
+				<div class="card-body">
+					{% if low_stock_items %}
+						<div class="table-responsive">
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th>Item</th>
+										<th>Current Stock</th>
+										<th>Minimum Required</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for item in low_stock_items %}
+										<tr>
+											<td>{{ item.name }}</td>
+											<td>{{ item.quantity }}</td>
+											<td>{{ item.minimum_quantity }}</td>
+										</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+					{% else %}
+						<p class="text-muted">No items with low stock.</p>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="card">
+				<div class="card-header">
+					<h5 class="card-title mb-0">Expiring Items</h5>
+				</div>
+				<div class="card-body">
+					{% if expiring_items %}
+						<div class="table-responsive">
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th>Item</th>
+										<th>Expiry Date</th>
+										<th>Quantity</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for item in expiring_items %}
+										<tr>
+											<td>{{ item.name }}</td>
+											<td>{{ item.expiry_date }}</td>
+											<td>{{ item.quantity }}</td>
+										</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+					{% else %}
+						<p class="text-muted">No items expiring soon.</p>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Pending Tasks -->
+	<div class="row">
+		<div class="col-md-6">
+			<div class="card">
+				<div class="card-header">
+					<h5 class="card-title mb-0">Pending Housekeeping Tasks</h5>
+				</div>
+				<div class="card-body">
+					{% if pending_tasks %}
+						<div class="table-responsive">
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th>Room</th>
+										<th>Scheduled Time</th>
+										<th>Assigned To</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for task in pending_tasks %}
+										<tr>
+											<td>{{ task.room }}</td>
+											<td>{{ task.scheduled_time }}</td>
+											<td>{{ task.assigned_to }}</td>
+										</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+					{% else %}
+						<p class="text-muted">No pending tasks.</p>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="card">
+				<div class="card-header">
+					<h5 class="card-title mb-0">Recent Inventory Usage</h5>
+				</div>
+				<div class="card-body">
+					{% if recent_usage %}
+						<div class="table-responsive">
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th>Item</th>
+										<th>Quantity Used</th>
+										<th>Room</th>
+										<th>Date</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for usage in recent_usage %}
+										<tr>
+											<td>{{ usage.item }}</td>
+											<td>{{ usage.quantity_used }}</td>
+											<td>{{ usage.room }}</td>
+											<td>{{ usage.date_used }}</td>
+										</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+					{% else %}
+						<p class="text-muted">No recent usage recorded.</p>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

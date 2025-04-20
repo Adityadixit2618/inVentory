@@ -1,0 +1,97 @@
+{% extends 'inventory/base.html' %}
+{% load inventory_tags %}
+
+{% block title %}Housekeeping Tasks - Hotel Inventory Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Housekeeping Tasks</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <a href="{% url 'add_task' %}" class="btn btn-sm btn-primary">
+                <i class="bi bi-plus-circle"></i> Add New Task
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5 class="card-title">Pending</h5>
+                    <h2 class="card-text">{{ tasks|filter_status:'pending'|length }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">In Progress</h5>
+                    <h2 class="card-text">{{ tasks|filter_status:'in_progress'|length }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Completed</h5>
+                    <h2 class="card-text">{{ tasks|filter_status:'completed'|length }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-secondary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Cancelled</h5>
+                    <h2 class="card-text">{{ tasks|filter_status:'cancelled'|length }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            {% if tasks %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Room</th>
+                                <th>Status</th>
+                                <th>Assigned To</th>
+                                <th>Scheduled Time</th>
+                                <th>Completed Time</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in tasks %}
+                                <tr>
+                                    <td>{{ task.room }}</td>
+                                    <td>
+                                        <span class="badge {% if task.status == 'pending' %}bg-light text-dark{% elif task.status == 'in_progress' %}bg-info{% elif task.status == 'completed' %}bg-success{% else %}bg-secondary{% endif %}">
+                                            {{ task.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ task.assigned_to }}</td>
+                                    <td>{{ task.scheduled_time }}</td>
+                                    <td>{{ task.completed_time|default:"-" }}</td>
+                                    <td>{{ task.notes|truncatechars:30|default:"-" }}</td>
+                                    <td>
+                                        <a href="{% url 'update_task' task.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted">No tasks found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

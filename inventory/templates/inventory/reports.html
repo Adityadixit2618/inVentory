@@ -1,0 +1,128 @@
+{% extends 'inventory/base.html' %}
+{% load inventory_tags %}
+
+{% block title %}Reports - Hotel Inventory Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Reports & Analytics</h1>
+    </div>
+
+    <!-- Inventory Value and Room Stats -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Inventory Value</h5>
+                </div>
+                <div class="card-body">
+                    <h2 class="display-4">₹{{ total_value|floatformat:2 }}</h2>
+                    <p class="text-muted">Total value of all inventory items</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Room Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <h3>{{ room_stats.total }}</h3>
+                            <p class="text-muted">Total Rooms</p>
+                        </div>
+                        <div class="col-6">
+                            <h3>{{ room_stats.occupied }}</h3>
+                            <p class="text-muted">Occupied Rooms</p>
+                        </div>
+                        <div class="col-6">
+                            <h3>{{ room_stats.available }}</h3>
+                            <p class="text-muted">Available Rooms</p>
+                        </div>
+                        <div class="col-6">
+                            <h3>{{ room_stats.maintenance }}</h3>
+                            <p class="text-muted">In Maintenance</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Low Stock and Expiring Items -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Low Stock Items</h5>
+                </div>
+                <div class="card-body">
+                    {% if low_stock_items %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Current Stock</th>
+                                        <th>Minimum Required</th>
+                                        <th>Deficit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in low_stock_items %}
+                                        <tr>
+                                            <td>{{ item.name }}</td>
+                                            <td>{{ item.quantity }}</td>
+                                            <td>{{ item.minimum_quantity }}</td>
+                                            <td class="text-danger">{{ item.minimum_quantity|subtract:item.quantity }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No items with low stock.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Expiring Items</h5>
+                </div>
+                <div class="card-body">
+                    {% if expiring_items %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Expiry Date</th>
+                                        <th>Days Left</th>
+                                        <th>Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in expiring_items %}
+                                        <tr>
+                                            <td>{{ item.name }}</td>
+                                            <td>{{ item.expiry_date }}</td>
+                                            <td>{{ item.expiry_date|timeuntil }}</td>
+                                            <td>{{ item.quantity }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No items expiring soon.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,64 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Inventory - Hotel Inventory Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Inventory Items</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <a href="{% url 'add_item' %}" class="btn btn-sm btn-primary">
+                <i class="bi bi-plus-circle"></i> Add New Item
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            {% if items %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Type</th>
+                                <th>Quantity</th>
+                                <th>Min. Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Location</th>
+                                <th>Expiry Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                                <tr {% if item.is_low_stock %}class="table-warning"{% endif %}>
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.category.name|default:"-" }}</td>
+                                    <td>{{ item.get_item_type_display }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>{{ item.minimum_quantity }}</td>
+                                    <td>₹{{ item.unit_price }}</td>
+                                    <td>{{ item.location|default:"-" }}</td>
+                                    <td>{{ item.expiry_date|default:"-" }}</td>
+                                    <td>
+                                        <a href="{% url 'edit_item' item.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="{% url 'delete_item' item.id %}" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted">No inventory items found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 
