@@ -1,14 +1,23 @@
-{% extends 'inventory/base.html' %}
+{% extends "inventory/base.html" %}
 
 {% block content %}
-	<div class="row">
-		<div class="col-11 col-md-4 mx-auto mt-5">
-			<h2>You Have Been Logged Out</h2>
-			<div class="border-top pt-3">
-				<small class="text-muted">
-					<a href="{% url 'login' %}">Log In Again</a>
-				</small>
-			</div>'
-		</div>
-	</div>
-{% endblock content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card mt-5">
+                <div class="card-body text-center">
+                    <h2 class="card-title mb-4">Logout Confirmation</h2>
+                    <p>Are you sure you want to logout?</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Yes, Logout</button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
