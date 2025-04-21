@@ -5,7 +5,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>{% block title %}Inventory Management{% endblock %}</title>
+	<title>{% block title %}Inventory Management System{% endblock %}</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
 	<link href="{% static 'css/main.css' %}" rel="stylesheet">
@@ -49,7 +49,7 @@
 			<!-- Sidebar -->
 			<div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
 				<div class="position-sticky pt-3">
-					<h4 class="text-white text-center mb-4">Hotel Inventory</h4>
+					<h4 class="text-white text-center mb-4">Inventory System</h4>
 					<ul class="nav flex-column">
 						<li class="nav-item">
 							<a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
@@ -57,18 +57,33 @@
 							</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link {% if request.resolver_match.url_name == 'inventory_list' %}active{% endif %}" href="{% url 'inventory_list' %}">
-								<i class="bi bi-box"></i> Inventory
+							<a class="nav-link {% if request.resolver_match.url_name == 'products' %}active{% endif %}" href="{% url 'products' %}">
+								<i class="bi bi-box"></i> Products
 							</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link {% if request.resolver_match.url_name == 'room_list' %}active{% endif %}" href="{% url 'room_list' %}">
-								<i class="bi bi-door-closed"></i> Rooms
+							<a class="nav-link {% if request.resolver_match.url_name == 'categories' %}active{% endif %}" href="{% url 'categories' %}">
+								<i class="bi bi-grid"></i> Categories
 							</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link {% if request.resolver_match.url_name == 'task_list' %}active{% endif %}" href="{% url 'task_list' %}">
-								<i class="bi bi-brush"></i> Housekeeping
+							<a class="nav-link {% if request.resolver_match.url_name == 'orders' %}active{% endif %}" href="{% url 'orders' %}">
+								<i class="bi bi-cart"></i> Orders
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {% if request.resolver_match.url_name == 'customers' %}active{% endif %}" href="{% url 'customers' %}">
+								<i class="bi bi-people"></i> Customers
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {% if request.resolver_match.url_name == 'suppliers' %}active{% endif %}" href="{% url 'suppliers' %}">
+								<i class="bi bi-truck"></i> Suppliers
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {% if request.resolver_match.url_name == 'stock' %}active{% endif %}" href="{% url 'stock' %}">
+								<i class="bi bi-box-seam"></i> Stock
 							</a>
 						</li>
 						<li class="nav-item">
@@ -79,6 +94,11 @@
 					</ul>
 					<hr class="text-white">
 					<ul class="nav flex-column">
+						<li class="nav-item">
+							<a class="nav-link {% if request.resolver_match.url_name == 'settings' %}active{% endif %}" href="{% url 'settings' %}">
+								<i class="bi bi-gear"></i> Settings
+							</a>
+						</li>
 						<li class="nav-item">
 							<a href="{% url 'logout' %}" class="nav-link">
 								<i class="bi bi-box-arrow-right"></i> Logout
