@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Category, InventoryItem, Supplier, Room, HousekeepingTask, InventoryUsage
+from .models import Category, InventoryItem, Supplier, Room, HousekeepingTask, InventoryUsage, Product, Order, Customer, Stock
 
 class UserRegisterForm(UserCreationForm):
 	email = forms.EmailField()
@@ -55,4 +55,53 @@ class InventoryUsageForm(forms.ModelForm):
 		fields = ['item', 'quantity_used', 'room', 'notes']
 		widgets = {
 			'notes': forms.Textarea(attrs={'rows': 3}),
+		}
+
+class ProductForm(forms.ModelForm):
+	class Meta:
+		model = Product
+		fields = ['productName', 'description', 'price', 'stockQuantity', 'categoryID']
+		labels = {
+			'productName': 'Product Name',
+			'description': 'Description',
+			'price': 'Price',
+			'stockQuantity': 'Stock Quantity',
+			'categoryID': 'Category'
+		}
+
+class OrderForm(forms.ModelForm):
+	class Meta:
+		model = Order
+		fields = ['customerID', 'orderDate', 'totalAmount']
+		labels = {
+			'customerID': 'Customer',
+			'orderDate': 'Order Date',
+			'totalAmount': 'Total Amount'
+		}
+		widgets = {
+			'orderDate': forms.DateInput(attrs={'type': 'date'})
+		}
+
+class CustomerForm(forms.ModelForm):
+	class Meta:
+		model = Customer
+		fields = ['customerName', 'contactInfo', 'address']
+		labels = {
+			'customerName': 'Customer Name',
+			'contactInfo': 'Contact Information',
+			'address': 'Address'
+		}
+
+class StockForm(forms.ModelForm):
+	class Meta:
+		model = Stock
+		fields = ['productID', 'quantity', 'costPrice', 'stockDate']
+		labels = {
+			'productID': 'Product',
+			'quantity': 'Quantity',
+			'costPrice': 'Cost Price',
+			'stockDate': 'Stock Date'
+		}
+		widgets = {
+			'stockDate': forms.DateInput(attrs={'type': 'date'})
 		}

@@ -8,50 +8,32 @@ from django.db.models import Sum, F, Q
 from django.utils import timezone
 from .forms import (
 	UserRegisterForm, InventoryItemForm, CategoryForm, SupplierForm,
-	RoomForm, HousekeepingTaskForm, InventoryUsageForm
+	RoomForm, HousekeepingTaskForm, InventoryUsageForm, ProductForm, OrderForm, CustomerForm, StockForm
 )
 from .models import (
 	InventoryItem, Category, Supplier, Room, HousekeepingTask,
-	InventoryUsage
+	InventoryUsage, Product, Order, OrderDetails, Customer, Stock
 )
 from inventory_management.settings import LOW_QUANTITY
+from django.contrib.auth.decorators import login_required
 
 class Index(TemplateView):
 	template_name = 'inventory/index.html'
 
-class Dashboard(LoginRequiredMixin, View):
-	def get(self, request):
-		# Inventory Overview
-		items = InventoryItem.objects.filter(user=request.user).order_by('id')
-		low_stock_items = items.filter(quantity__lte=F('minimum_quantity'))
-		expiring_items = items.filter(expiry_date__lte=timezone.now() + timezone.timedelta(days=30))
-		
-		# Room Status
-		rooms = Room.objects.all()
-		available_rooms = rooms.filter(status='available').count()
-		occupied_rooms = rooms.filter(status='occupied').count()
-		
-		# Housekeeping Tasks
-		pending_tasks = HousekeepingTask.objects.filter(
-			status='pending',
-			scheduled_time__lte=timezone.now() + timezone.timedelta(hours=24)
-		)
-		
-		# Recent Inventory Usage
-		recent_usage = InventoryUsage.objects.order_by('-date_used')[:5]
-		
-		context = {
-			'items': items,
-			'low_stock_items': low_stock_items,
-			'expiring_items': expiring_items,
-			'rooms': rooms,
-			'available_rooms': available_rooms,
-			'occupied_rooms': occupied_rooms,
-			'pending_tasks': pending_tasks,
-			'recent_usage': recent_usage,
-		}
-		
-		return render(request, 'inventory/dashboard.html', context)
+@login_required
+def dashboard(request):
+	total_products = Product.objects.count()
+	total_orders = Order.objects.count()
+	total_customers = Customer.objects.count()
+	low_stock_products = Product.objects.filter(stockquantity__lt=10)
+	
+	context = {
+		'total_products': total_products,
+		'total_orders': total_orders,
+		'total_customers': total_customers,
+		'low_stock_products': low_stock_products,
+	}
+	return render(request, 'inventory/dashboard.html', context)
 
 class SignUpView(View):
 	def get(self, request):
@@ -221,3 +203,230 @@ def logout_view(request):
 		return redirect('login')
 	elif request.method == 'GET':
 		return render(request, 'inventory/logout.html')
+
+# Product Views
+@login_required
+def product_list(request):
+	products = Product.objects.all()
+	return render(request, 'inventory/product_list.html', {'products': products})
+
+@login_required
+def product_add(request):
+	if request.method == 'POST':
+		form = ProductForm(request.POST)
+		if form.is_valid():
+			form.save()
+			messages.success(request, 'Product added successfully.')
+			return redirect('products')
+	else:
+		form = ProductForm()
+	return render(request, 'inventory/product_form.html', {'form': form})
+
+@login_required
+def product_edit(request, pk):
+	product = get_object_or_404(Product, pk=pk)
+	if request.method == 'POST':
+		form = ProductForm(request.POST, instance=product)
+		if form.is_valid():
+			form.save()
+			messages.success(request, 'Product updated successfully.')
+			return redirect('products')
+	else:
+		form = ProductForm(instance=product)
+	return render(request, 'inventory/product_form.html', {'form': form})
+
+@login_required
+def product_delete(request, pk):
+	product = get_object_or_404(Product, pk=pk)
+	product.delete()
+	messages.success(request, 'Product deleted successfully.')
+	return redirect('products')
+
+# Category Views
+@login_required
+def category_list(request):
+	categories = Category.objects.all()
+	return render(request, 'inventory/category_list.html', {'categories': categories})
+
+@login_required
+def category_add(request):
+	if request.method == 'POST':
+		form = CategoryForm(request.POST)
+		if form.is_valid():
+			form.save()
+			messages.success(request, 'Category added successfully.')
+			return redirect('categories')
+	else:
+		form = CategoryForm()
+	return render(request, 'inventory/category_form.html', {'form': form})
+
+@login_required
+def category_edit(request, pk):
+	category = get_object_or_404(Category, pk=pk)
+	if request.method == 'POST':
+		form = CategoryForm(request.POST, instance=category)
+		if form.is_valid():
+			form.save()
+			messages.success(request, 'Category updated successfully.')
+			return redirect('categories')
+	else:
+		form = CategoryForm(instance=category)
+	return render(request, 'inventory/category_form.html', {'form': form})
+
+@login_required
+def category_delete(request, pk):
+	category = get_object_or_404(Category, pk=pk)
+	category.delete()
+	messages.success(request, 'Category deleted successfully.')
+	return redirect('categories')
+
+# Order Views
+@login_required
+def order_list(request):
+	orders = Order.objects.all().order_by('-orderDate')
+	return render(request, 'inventory/order_list.html', {'orders': orders})
+
+@login_required
+def order_add(request):
+	if request.method == 'POST':
+		form = OrderForm(request.POST)
+		if form.is_valid():
+			form.save()
+			messages.success(request, 'Order added successfully.')
+			return redirect('orders')
+	else:
+		form = OrderForm()
+	return render(request, 'inventory/order_form.html', {'form': form})
+
+@login_required
+def order_detail(request, pk):
+	order = get_object_or_404(Order, pk=pk)
+	return render(request, 'inventory/order_detail.html', {'order': order})
+
+@login_required
+def order_edit(request, pk):
+	order = get_object_or_404(Order, pk=pk)
+	if request.method == 'POST':
+		form = OrderForm(request.POST, instance=order)
+		if form.is_valid():
+			form.save()
+			messages.success(request, 'Order updated successfully.')
+			return redirect('orders')
+	else:
+		form = OrderForm(instance=order)
+	return render(request, 'inventory/order_form.html', {'form': form})
+
+# Customer Views
+@login_required
+def customer_list(request):
+	customers = Customer.objects.all()
+	return render(request, 'inventory/customer_list.html', {'customers': customers})
+
+@login_required
+def customer_add(request):
+	if request.method == 'POST':
+		form = CustomerForm(request.POST)
+		if form.is_valid():
+			form.save()
+			messages.success(request, 'Customer added successfully.')
+			return redirect('customers')
+	else:
+		form = CustomerForm()
+	return render(request, 'inventory/customer_form.html', {'form': form})
+
+@login_required
+def customer_edit(request, pk):
+	customer = get_object_or_404(Customer, pk=pk)
+	if request.method == 'POST':
+		form = CustomerForm(request.POST, instance=customer)
+		if form.is_valid():
+			form.save()
+			messages.success(request, 'Customer updated successfully.')
+			return redirect('customers')
+	else:
+		form = CustomerForm(instance=customer)
+	return render(request, 'inventory/customer_form.html', {'form': form})
+
+@login_required
+def customer_delete(request, pk):
+	customer = get_object_or_404(Customer, pk=pk)
+	customer.delete()
+	messages.success(request, 'Customer deleted successfully.')
+	return redirect('customers')
+
+# Supplier Views
+@login_required
+def supplier_list(request):
+	suppliers = Supplier.objects.all()
+	return render(request, 'inventory/supplier_list.html', {'suppliers': suppliers})
+
+@login_required
+def supplier_add(request):
+	if request.method == 'POST':
+		form = SupplierForm(request.POST)
+		if form.is_valid():
+			form.save()
+			messages.success(request, 'Supplier added successfully.')
+			return redirect('suppliers')
+	else:
+		form = SupplierForm()
+	return render(request, 'inventory/supplier_form.html', {'form': form})
+
+@login_required
+def supplier_edit(request, pk):
+	supplier = get_object_or_404(Supplier, pk=pk)
+	if request.method == 'POST':
+		form = SupplierForm(request.POST, instance=supplier)
+		if form.is_valid():
+			form.save()
+			messages.success(request, 'Supplier updated successfully.')
+			return redirect('suppliers')
+	else:
+		form = SupplierForm(instance=supplier)
+	return render(request, 'inventory/supplier_form.html', {'form': form})
+
+@login_required
+def supplier_delete(request, pk):
+	supplier = get_object_or_404(Supplier, pk=pk)
+	supplier.delete()
+	messages.success(request, 'Supplier deleted successfully.')
+	return redirect('suppliers')
+
+# Stock Views
+@login_required
+def stock_list(request):
+	stock_items = Stock.objects.all()
+	return render(request, 'inventory/stock_list.html', {'stock_items': stock_items})
+
+@login_required
+def stock_add(request):
+	if request.method == 'POST':
+		form = StockForm(request.POST)
+		if form.is_valid():
+			form.save()
+			messages.success(request, 'Stock added successfully.')
+			return redirect('stock')
+	else:
+		form = StockForm()
+	return render(request, 'inventory/stock_form.html', {'form': form})
+
+@login_required
+def stock_edit(request, pk):
+	stock = get_object_or_404(Stock, pk=pk)
+	if request.method == 'POST':
+		form = StockForm(request.POST, instance=stock)
+		if form.is_valid():
+			form.save()
+			messages.success(request, 'Stock updated successfully.')
+			return redirect('stock')
+	else:
+		form = StockForm(instance=stock)
+	return render(request, 'inventory/stock_form.html', {'form': form})
+
+@login_required
+def reports(request):
+	return render(request, 'inventory/reports.html')
+
+@login_required
+def settings(request):
+	return render(request, 'inventory/settings.html')
